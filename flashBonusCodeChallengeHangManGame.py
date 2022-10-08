@@ -10,7 +10,10 @@ import random
 import requests
 import os
 
-# Download dictionary file as a word source -- From comment at https://stackoverflow.com/questions/6386308/http-requests-and-json-parsing-in-python and linked Github site
+# Download dictionary file as a word source --
+# From comment at https://stackoverflow.com/questions/6386308/http-requests-and-json-parsing-in-python
+# and linked GitHub site
+
 dict_download = requests.get("https://raw.githubusercontent.com/adambom/dictionary/master/dictionary.json").json()
 
 # Initialize variables
@@ -19,14 +22,25 @@ hide_word = ""
 remaining_guesses = 0
 retry = "yes"
 word = ""
+winCount = 0
+lossCount = 0
+gameCount = 0
+
 
 # Function to clear screen -- Found at https://stackoverflow.com/questions/517970/how-to-clear-the-interpreter-console
+
+
 def clear_screen():
-    os.system('cls' if os.name=='nt' else 'clear')
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+clear_screen()
+
 
 # Check guesses function
-def check_guess(word, guess, hide_word):
 
+
+def check_guess(word, guess, hide_word):
     # Check for single-letter guesses vs. full words
     if len(guess) != 1:
 
@@ -52,7 +66,10 @@ def check_guess(word, guess, hide_word):
         # Return modifications to hidden word line and if guess is correct
         return hide_word, good
 
+
 # Create a header that clears the screen, puts a welcome text, and shows how many letters are in the word
+
+
 def welcome(word):
     # Clear the screen
     clear_screen()
@@ -73,12 +90,12 @@ while retry.lower()[0] == "y":
 
     # Set up hidden word string
     for x in range(len(word)):
-        if (word[x] == " "):
-            hide_word = hide_word[:(x)] + " "
-        elif (word[x] == "-"):
-            hide_word = hide_word[:(x)] + "-"
+        if word[x] == " ":
+            hide_word = hide_word[:x] + " "
+        elif word[x] == "-":
+            hide_word = hide_word[:x] + "-"
         else:
-            hide_word = hide_word[:(x)] + "_"
+            hide_word = hide_word[:x] + "_"
 
     # Start game
     guess_record = []
@@ -112,7 +129,7 @@ while retry.lower()[0] == "y":
         welcome(word)
 
         # Test if guess is correct and inform player
-        if (guess in guess_record):
+        if guess in guess_record:
             print("You've already guessed that. Try again.\n")
         elif good_guess:
             guess_record.append(guess)
@@ -125,16 +142,23 @@ while retry.lower()[0] == "y":
         # Test for end of game conditions
         if remaining_guesses == 0:
             print("\nSorry. You lost this round.")
+            lossCount += 1
+            gameCount += 1
+
         elif hide_word == word:
             print("\nYOU WON!")
+            winCount += 1
             remaining_guesses = 0
+            gameCount += 1
 
     # End of game
     # Show word
     print("\nThe word was:", word)
 
-    #Show definition of the word
+    # Show definition of the word
     print("Its definition is:", definition)
+    # Score
+    print("Out of ", gameCount, " games, you have won ", winCount, " time(s) and lost ", lossCount, " time(s).")
 
     # Ask if user wants to play again
     retry = input("\nWould you like to play again (yes/no)? ")
